@@ -20,6 +20,7 @@ const (
 	LiquidLFM7B            = "liquid/lfm-7b"
 	Phi3Mini               = "microsoft/phi-3-mini-128k-instruct:free"
 	GeminiFlashExp         = "google/gemini-2.0-flash-exp:free"
+	GeminiFlashImage       = "google/gemini-2.5-flash-image"
 	GeminiProExp           = "google/gemini-pro-1.5-exp"
 	GeminiFlash8B          = "google/gemini-flash-1.5-8b"
 	GPT4oMini              = "openai/gpt-4o-mini"
@@ -92,6 +93,35 @@ const (
 	ModalityImage ChatCompletionModality = "image"
 )
 
+type ChatCompletionImageConfigAspectRatio string
+
+const (
+	// AspectRatioSquare_1_1 sets the image size to 1024×1024 (default)
+	AspectRatioSquare_1_1 ChatCompletionImageConfigAspectRatio = "1:1"
+	// AspectRatioPortrait_2_3 sets the image size to 832×1248
+	AspectRatioPortrait_2_3 ChatCompletionImageConfigAspectRatio = "2:3"
+	// AspectRatioLandscape_3_2 sets the image size to 1248×832
+	AspectRatioLandscape_3_2 ChatCompletionImageConfigAspectRatio = "3:2"
+	// AspectRatioPortrait_3_4 sets the image size to 864×1184
+	AspectRatioPortrait_3_4 ChatCompletionImageConfigAspectRatio = "3:4"
+	// AspectRatioLandscape_4_3 sets the image size to 1184×864
+	AspectRatioLandscape_4_3 ChatCompletionImageConfigAspectRatio = "4:3"
+	// AspectRatioFlexible_4_5 sets the image size to 896×1152
+	AspectRatioFlexible_4_5 ChatCompletionImageConfigAspectRatio = "4:5"
+	// AspectRatioFlexible_5_4 sets the image size to 1152×896
+	AspectRatioFlexible_5_4 ChatCompletionImageConfigAspectRatio = "5:4"
+	// AspectRatioPortrait_9_16 sets the image size to 768×1344
+	AspectRatioPortrait_9_16 ChatCompletionImageConfigAspectRatio = "9:16"
+	// AspectRatioLandscape_16_9 sets the image size to 1344×768
+	AspectRatioLandscape_16_9 ChatCompletionImageConfigAspectRatio = "16:9"
+	// AspectRatioLandscape_21_9 sets the image size to 1536×672
+	AspectRatioLandscape_21_9 ChatCompletionImageConfigAspectRatio = "21:9"
+)
+
+type ImageConfig struct {
+	AspectRatio ChatCompletionImageConfigAspectRatio `json:"aspect_ratio"`
+}
+
 type ChatCompletionRequest struct {
 	Model string `json:"model,omitempty"`
 	// Optional model fallbacks: https://openrouter.ai/docs/features/model-routing#the-models-parameter
@@ -103,6 +133,10 @@ type ChatCompletionRequest struct {
 
 	Plugins    []ChatCompletionPlugin   `json:"plugins,omitempty"`
 	Modalities []ChatCompletionModality `json:"modalities,omitempty"`
+
+	// ImageConfig Gemini image-generation models configuration.
+	// refs: https://openrouter.ai/docs/features/multimodal/image-generation#image-aspect-ratio-configuration
+	ImageConfig *ImageConfig `json:"image_config,omitempty"`
 
 	// MaxTokens The maximum number of tokens that can be generated in the chat completion.
 	// This value can be used to control costs for text generated via API.
