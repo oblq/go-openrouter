@@ -108,3 +108,35 @@ func TestChatCompletionMessagePromptCachingApplies(t *testing.T) {
 	expected := `{"role":"user","content":[{"text":"This is a simple content","cache_control":{"type":"ephemeral"}}]}`
 	marshalAndValidate(t, message, expected)
 }
+
+func marshalAndValidateRequest(t *testing.T, request openrouter.ChatCompletionRequest, expected string) {
+	result, err := json.Marshal(request)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if string(result) != expected {
+		t.Errorf("expected %s, got %s", expected, result)
+	}
+}
+
+func TestChatCompletionRequestWithImageConfig(t *testing.T) {
+	request := openrouter.ChatCompletionRequest{
+		Model: openrouter.GeminiFlashExp,
+		Messages: []openrouter.ChatCompletionMessage{
+			{
+				Role:    openrouter.ChatMessageRoleUser,
+				Content: openrouter.Content{Text: "Generate an image of a sunset"},
+			},
+		},
+		Modalities: []openrouter.ChatCompletionModality{
+			openrouter.ModalityImage,
+		},
+		ImageConfig: &openrouter.ImageConfig{
+			AspectRatio: openrouter.AspectRatioLandscape_16_9,
+		},
+	}
+
+	expected := `{"model":"google/gemini-2.0-flash-exp:free","messages":[{"role":"user","content":"Generate an image of a sunset"}],"modalities":["image"],"image_config":{"aspect_ratio":"16:9"}}`
+	marshalAndValidateRequest(t, request, expected)
+}
